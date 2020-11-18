@@ -1,0 +1,3 @@
+[console_scripts]
+core = jarvis_core.core:main
+

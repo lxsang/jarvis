@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "/home/jarvis/Arduino/libraries/Adafruit_Motor_Shield_V2_Library/",
+                "/home/jarvis/Arduino/libraries/Adafruit_ADS1X15/",
+                "/home/jarvis/.arduino15/packages/arduino/hardware/avr/1.8.3/cores/arduino/",
+                "/home/jarvis/.arduino15/packages/arduino/hardware/avr/1.8.3/libraries/Wire/src/",
+                "/home/jarvis/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr/include",
+                "/home/jarvis/.arduino15/packages/arduino/hardware/avr/1.8.3/variants/mega"
+            ],
+            "defines": [
+                "ARDUINO=150"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "gcc-arm64"
+        }
+    ],
+    "version": 4
+}

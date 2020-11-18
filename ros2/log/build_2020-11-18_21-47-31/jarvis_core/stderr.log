@@ -1,0 +1,5 @@
+  File "/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages/jarvis_core/core.py", line 13
+    if frame 1 = None:
+             ^
+SyntaxError: invalid syntax
+

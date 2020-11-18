@@ -1,0 +1,124 @@
+[1.046s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--packages-select', 'jarvis_core']
+[1.046s] DEBUG:colcon:Parsed command line arguments: Namespace(ament_cmake_args=None, base_paths=['.'], build_base='build', catkin_cmake_args=None, catkin_skip_building_tests=False, cmake_args=None, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, cmake_target=None, cmake_target_skip_unavailable=False, continue_on_error=False, event_handlers=None, executor='parallel', ignore_user_meta=False, install_base='install', log_base=None, log_level=None, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7f9f45dd00>>, merge_install=False, metas=['./colcon.meta'], packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_end=None, packages_ignore=None, packages_ignore_regex=None, packages_select=['jarvis_core'], packages_select_build_failed=False, packages_select_by_dep=None, packages_select_regex=None, packages_select_test_failures=False, packages_skip=None, packages_skip_build_finished=False, packages_skip_by_dep=None, packages_skip_regex=None, packages_skip_test_passed=False, packages_skip_up_to=None, packages_start=None, packages_up_to=None, packages_up_to_regex=None, parallel_workers=2, paths=None, symlink_install=False, test_result_base=None, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7f9f45dd00>, verb_name='build', verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x7f9f4692b0>)
+[1.117s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[1.119s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[1.120s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[1.122s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[1.123s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[1.124s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[1.124s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/jarvis/workspace/ros2'
+[1.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[1.125s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[1.126s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[1.126s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[1.127s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[1.127s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[1.127s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[1.128s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[1.132s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[1.203s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[1.204s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[1.211s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[1.213s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[1.218s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[1.220s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[1.222s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[1.225s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[1.227s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[1.229s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[1.231s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[1.233s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[1.235s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[1.237s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[1.239s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[1.240s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[1.241s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[1.241s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[1.241s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[1.242s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[1.242s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[1.243s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[1.243s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[1.244s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[1.244s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extensions ['ignore', 'ignore_ament_install']
+[1.245s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extension 'ignore'
+[1.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extension 'ignore_ament_install'
+[1.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extensions ['colcon_pkg']
+[1.246s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extension 'colcon_pkg'
+[1.247s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extensions ['colcon_meta']
+[1.247s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extension 'colcon_meta'
+[1.248s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extensions ['ros']
+[1.252s] Level 1:colcon.colcon_core.package_identification:_identify(src/jarvis_core) by extension 'ros'
+[1.271s] DEBUG:colcon.colcon_core.package_identification:Package 'src/jarvis_core' with type 'ros.ament_python' and name 'jarvis_core'
+[1.273s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[1.274s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[1.276s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[1.277s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[1.279s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[1.422s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'cmake_args' from command line to 'None'
+[1.425s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'cmake_target' from command line to 'None'
+[1.426s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.427s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'cmake_clean_cache' from command line to 'False'
+[1.429s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'cmake_clean_first' from command line to 'False'
+[1.430s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'cmake_force_configure' from command line to 'False'
+[1.431s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'ament_cmake_args' from command line to 'None'
+[1.433s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'catkin_cmake_args' from command line to 'None'
+[1.434s] Level 5:colcon.colcon_core.verb:set package 'jarvis_core' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.435s] DEBUG:colcon.colcon_core.verb:Building package 'jarvis_core' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/jarvis/workspace/ros2/build/jarvis_core', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/jarvis/workspace/ros2/install/jarvis_core', 'merge_install': False, 'path': '/home/jarvis/workspace/ros2/src/jarvis_core', 'symlink_install': False, 'test_result_base': None}
+[1.437s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[1.451s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[1.452s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/jarvis/workspace/ros2/src/jarvis_core' with build type 'ament_python'
+[1.453s] Level 1:colcon.colcon_core.shell:create_environment_hook('jarvis_core', 'ament_prefix_path')
+[1.478s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[1.481s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/hook/ament_prefix_path.ps1'
+[1.490s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/hook/ament_prefix_path.dsv'
+[1.494s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/hook/ament_prefix_path.sh'
+[1.502s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.502s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.522s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/foxy'
+[2.902s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/jarvis/workspace/ros2/src/jarvis_core'
+[2.906s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.907s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.919s] DEBUG:colcon.colcon_core.shell:Ignoring prefix path '/opt/ros/foxy'
+[2.957s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/jarvis/workspace/ros2/src/jarvis_core': PYTHONPATH=/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/jarvis_core build --build-base /home/jarvis/workspace/ros2/build/jarvis_core/build install --prefix /home/jarvis/workspace/ros2/install/jarvis_core --record /home/jarvis/workspace/ros2/build/jarvis_core/install.log --single-version-externally-managed
+[4.656s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/jarvis/workspace/ros2/src/jarvis_core' returned '0': PYTHONPATH=/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/jarvis_core build --build-base /home/jarvis/workspace/ros2/build/jarvis_core/build install --prefix /home/jarvis/workspace/ros2/install/jarvis_core --record /home/jarvis/workspace/ros2/build/jarvis_core/install.log --single-version-externally-managed
+[4.674s] Level 1:colcon.colcon_core.environment:checking '/home/jarvis/workspace/ros2/install/jarvis_core' for CMake module files
+[4.678s] Level 1:colcon.colcon_core.environment:checking '/home/jarvis/workspace/ros2/install/jarvis_core' for CMake config files
+[4.682s] Level 1:colcon.colcon_core.environment:checking '/home/jarvis/workspace/ros2/install/jarvis_core/lib'
+[4.683s] Level 1:colcon.colcon_core.environment:checking '/home/jarvis/workspace/ros2/install/jarvis_core/bin'
+[4.683s] Level 1:colcon.colcon_core.environment:checking '/home/jarvis/workspace/ros2/install/jarvis_core/lib/pkgconfig/jarvis_core.pc'
+[4.684s] Level 1:colcon.colcon_core.environment:checking '/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages'
+[4.684s] Level 1:colcon.colcon_core.shell:create_environment_hook('jarvis_core', 'pythonpath')
+[4.688s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/hook/pythonpath.ps1'
+[4.690s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/hook/pythonpath.dsv'
+[4.693s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/hook/pythonpath.sh'
+[4.695s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(jarvis_core)
+[4.699s] INFO:colcon.colcon_core.shell:Creating package script '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/package.ps1'
+[4.705s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/package.dsv'
+[4.709s] INFO:colcon.colcon_core.shell:Creating package script '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/package.sh'
+[4.716s] INFO:colcon.colcon_core.shell:Creating package script '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/package.bash'
+[4.721s] INFO:colcon.colcon_core.shell:Creating package script '/home/jarvis/workspace/ros2/install/jarvis_core/share/jarvis_core/package.zsh'
+[4.726s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/jarvis/workspace/ros2/install/jarvis_core/share/colcon-core/packages/jarvis_core)
+[4.729s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[4.730s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[4.731s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[4.731s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[4.761s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[4.762s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[4.763s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[4.821s] DEBUG:colcon.colcon_notification.desktop_notification.notify2:Failed to initialize notify2: org.freedesktop.DBus.Error.Spawn.ChildExited: Process org.freedesktop.Notifications exited with status 1
+[4.821s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[4.825s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jarvis/workspace/ros2/install/local_setup.ps1'
+[4.831s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jarvis/workspace/ros2/install/_local_setup_util_ps1.py'
+[4.840s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jarvis/workspace/ros2/install/setup.ps1'
+[4.855s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jarvis/workspace/ros2/install/local_setup.sh'
+[4.858s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/jarvis/workspace/ros2/install/_local_setup_util_sh.py'
+[4.861s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jarvis/workspace/ros2/install/setup.sh'
+[4.876s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jarvis/workspace/ros2/install/local_setup.bash'
+[4.879s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jarvis/workspace/ros2/install/setup.bash'
+[4.894s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/jarvis/workspace/ros2/install/local_setup.zsh'
+[4.897s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/jarvis/workspace/ros2/install/setup.zsh'

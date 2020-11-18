@@ -1,0 +1,24 @@
+[1.467s] Invoking command in '/home/jarvis/workspace/ros2/src/jarvis_core': PYTHONPATH=/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/jarvis_core build --build-base /home/jarvis/workspace/ros2/build/jarvis_core/build install --prefix /home/jarvis/workspace/ros2/install/jarvis_core --record /home/jarvis/workspace/ros2/build/jarvis_core/install.log --single-version-externally-managed
+[2.841s] running egg_info
+[2.854s] writing ../../build/jarvis_core/jarvis_core.egg-info/PKG-INFO
+[2.858s] writing dependency_links to ../../build/jarvis_core/jarvis_core.egg-info/dependency_links.txt
+[2.861s] writing entry points to ../../build/jarvis_core/jarvis_core.egg-info/entry_points.txt
+[2.863s] writing requirements to ../../build/jarvis_core/jarvis_core.egg-info/requires.txt
+[2.864s] writing top-level names to ../../build/jarvis_core/jarvis_core.egg-info/top_level.txt
+[3.118s] reading manifest file '../../build/jarvis_core/jarvis_core.egg-info/SOURCES.txt'
+[3.130s] writing manifest file '../../build/jarvis_core/jarvis_core.egg-info/SOURCES.txt'
+[3.139s] running build
+[3.139s] running build_py
+[3.140s] copying jarvis_core/core.py -> /home/jarvis/workspace/ros2/build/jarvis_core/build/lib/jarvis_core
+[3.141s] running install
+[3.152s] running install_lib
+[3.163s] copying /home/jarvis/workspace/ros2/build/jarvis_core/build/lib/jarvis_core/core.py -> /home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages/jarvis_core
+[3.173s] byte-compiling /home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages/jarvis_core/core.py to core.cpython-38.pyc
+[3.189s] running install_data
+[3.192s] running install_egg_info
+[3.209s] removing '/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages/jarvis_core-0.0.0-py3.8.egg-info' (and everything under it)
+[3.214s] Copying ../../build/jarvis_core/jarvis_core.egg-info to /home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages/jarvis_core-0.0.0-py3.8.egg-info
+[3.227s] running install_scripts
+[3.334s] Installing core script to /home/jarvis/workspace/ros2/install/jarvis_core/lib/jarvis_core
+[3.345s] writing list of installed files to '/home/jarvis/workspace/ros2/build/jarvis_core/install.log'
+[3.501s] Invoked command in '/home/jarvis/workspace/ros2/src/jarvis_core' returned '0': PYTHONPATH=/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base ../../build/jarvis_core build --build-base /home/jarvis/workspace/ros2/build/jarvis_core/build install --prefix /home/jarvis/workspace/ros2/install/jarvis_core --record /home/jarvis/workspace/ros2/build/jarvis_core/install.log --single-version-externally-managed

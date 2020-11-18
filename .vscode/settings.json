@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.includePath": [
+        "/home/Arduino/libraries/Adafruit_Motor_Shield_V2_Library/",
+        "/home/Arduino/libraries/Adafruit_ADS1X15/",
+    ]
+}
