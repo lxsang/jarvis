@@ -5,15 +5,13 @@ from geometry_msgs.msg import Point
 
 FRAME_TYPE_DATA = 0
 FRAME_TYPE_LOG = 1
+FRAME_TYPE_CMD = 2
 
-LOG_EMERG = 0   # system is unusable
-LOG_ALERT = 1   # action must be taken immediately
-LOG_CRIT = 2    # critical conditions
-LOG_ERR = 3     # error conditions
-LOG_WARNING = 4  # warning conditions
-LOG_NOTICE = 5  # normal but significant condition
-LOG_INFO = 6    # informational
-LOG_DEBUG = 7   # debug-level messages
+LOG_FATAL = 0       # system is unusable
+LOG_ERR = 1         # error conditions
+LOG_WARNING = 2     # warning conditions
+LOG_INFO = 3        # informational
+LOG_DEBUG = 4       # debug-level messages
 
 
 class BaseFrame():
@@ -39,7 +37,22 @@ class BaseFrame():
 
     @classmethod
     def cobs_encode(cls, raw_frame):
-        pass
+        if len(raw_frame) == 0:
+            return raw_frame
+
+        # insert overhead bytes at the beginning
+        raw_frame.insert(0, 0)
+        # insert overhead bytes at the end
+        raw_frame.append(0)
+        encoded_len = len(raw_frame)
+        # loop through all bytes
+        offset = 0
+        for i in range(0, encoded_len):
+            byte = raw_frame[i]
+            if byte == 0:
+                raw_frame[offset] = i - offset
+                offset = i
+        return raw_frame
 
     @classmethod
     def cobs_decode(cls, encoded_frame):
@@ -56,6 +69,11 @@ class BaseFrame():
         raw_data = cls.cobs_decode(encoded_frame)
         crc = int.from_bytes(raw_data[len(raw_data) - 2:], byteorder='big')
         raw_frame = raw_data[0:len(raw_data) - 2]
+        if len(raw_frame) == 0:
+            frame = LogFrame()
+            frame.level = LOG_WARNING
+            frame.log_str = "Empty frame. Ignore it"
+            return frame
         # check the CRC value
         calculated_crc = cls.crc16_ccitt(raw_frame)
         if crc == calculated_crc:
@@ -68,15 +86,15 @@ class BaseFrame():
                     # log frame
                     frame = LogFrame()
                 else:
-                    print("Unknown frame type: %d. Ignore Frame" %
-                          raw_frame[0])
-                    frame = None
+                    frame = LogFrame()
+                    frame.level = LOG_WARNING
+                    frame.log_str = "Unknown frame type: %d. Ignore Frame" % raw_frame[0]
+                    return frame
         else:
-            print('Frame CRC is not correct. Ignore frame')
-            frame = None
-
-        if frame is None:
-            return None
+            frame = LogFrame()
+            frame.level = LOG_WARNING
+            frame.log_str = 'Frame CRC is not correct. Ignore frame'
+            return frame
 
         frame.deserialize(raw_frame[1:])
         return frame
@@ -102,8 +120,56 @@ class LogFrame(BaseFrame):
         self.level = raw[0]
         self.log_str = raw[1:].decode("utf-8")
 
+    def serialize(self):
+        # use to set the log level on the arduino side only
+        arr = bytearray()
+        arr.insert(0, self.level)
+        arr.insert(0, self.type)
+        # CRC value
+        arr.extend(BaseFrame.crc16_ccitt(arr).to_bytes(2, 'big'))
+        # encode to COBS
+        return BaseFrame.cobs_encode(arr)
+
+    def log(self, logger):
+        if self.level == LOG_FATAL:
+            return logger.fatal(self.log_str)
+
+        if self.level == LOG_ERR:
+            return logger.error(self.log_str)
+
+        if self.level == LOG_WARNING:
+            return logger.warn(self.log_str)
+
+        if self.level == LOG_INFO:
+            return logger.info(self.log_str)
+
+        return logger.debug(self.log_str)
+
     def __str__(self):
         return self.log_str
+
+
+class CMDFrame(BaseFrame):
+    l_pwm = 0
+    r_pwm = 0
+
+    def __init__(self):
+        self.type = FRAME_TYPE_CMD
+
+    def deserialize(self):
+        pass
+
+    def serialize(self):
+        arr = bytearray(self.l_pwm.to_bytes(2, "big", signed=True))
+        arr.extend(self.r_pwm.to_bytes(2, "big", signed=True))
+        arr.insert(0, self.type)
+        # CRC value
+        arr.extend(BaseFrame.crc16_ccitt(arr).to_bytes(2, 'big'))
+        # encode to COBS
+        return BaseFrame.cobs_encode(arr)
+
+    def __str__(self):
+        return "Left PWM: %d, Right PWM: %d" % (self.l_pwm, self.r_pwm)
 
 
 class DataFrame(BaseFrame):
@@ -116,6 +182,9 @@ class DataFrame(BaseFrame):
 
     def __init__(self):
         self.type = FRAME_TYPE_DATA
+
+    def serialize(self):
+        pass
 
     def deserialize(self, raw):
         offset = 0
@@ -144,11 +213,10 @@ class DataFrame(BaseFrame):
         offset += 4
 
         self.left_tick = int.from_bytes(
-            raw[offset: offset + 2], byteorder='big')
+            raw[offset: offset + 2], byteorder='big', signed=True)
         offset += 2
-
         self.right_tick = int.from_bytes(
-            raw[offset: offset + 2], byteorder='big')
+            raw[offset: offset + 2], byteorder='big', signed=True)
 
     def __str__(self):
         return "Gyro: %s\nAccelerometer: %s\nMagnetometer: %s\nBattery: %.4f\nLeft tick: %d\nRight tick: %d\n" % (str(self.gyro), str(self.accel), str(self.mag), self.battery, self.left_tick, self.right_tick)
@@ -159,21 +227,24 @@ class JarvisSerial():
     docstring
     """
     serial = None
-    is_sync = False
+    # is_sync = False
 
     def __init__(self, dev='/dev/ttyACM0', baud=115200):
         self.serial = serial.Serial(dev, baud)
 
-    def sync(self):
-        if not self.is_sync:
-            self.serial.read_until(b'\x00')
-            self.is_sync = True
+    # def sync(self):
+    #    if not self.is_sync:
+    #        self.serial.read_until(b'\x00')
+    #        self.is_sync = True
 
     def read_frame(self):
         # if self.serial.inWaiting() > 0:
-        if self.is_sync == False:
-            self.sync()
+        # if self.is_sync == False:
+        #    self.sync()
         bytes_frame = self.serial.read_until(b'\x00')
         return BaseFrame.decode(bytearray(bytes_frame))
         # else:
         #    return None
+
+    def send_frame(self, frame):
+        return self.serial.write(frame.serialize())

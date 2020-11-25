@@ -19,25 +19,14 @@ size_t cobs_encode(const uint8_t *ptr, size_t length, uint8_t *dst)
     return dst - start;
 }
 
-size_t cobs_decode(const uint8_t *ptr, size_t length, uint8_t *dst)
+size_t cobs_decode(uint8_t *ptr, size_t length)
 {
-    const uint8_t *start = dst, *end = ptr + length;
-    uint8_t code = 0xFF, copy = 0;
-
-    for (; ptr < end; copy--)
+    size_t offset = 0, next_offset = 0;
+    while (offset < length && ptr[offset] != 0)
     {
-        if (copy != 0)
-        {
-            *dst++ = *ptr++;
-        }
-        else
-        {
-            if (code != 0xFF)
-                *dst++ = 0;
-            copy = code = *ptr++;
-            if (code == 0)
-                break; /* Source length too long */
-        }
+        next_offset = ptr[offset];
+        ptr[offset] = 0;
+        offset = offset + next_offset;
     }
-    return dst - start;
+    return length - 2;
 }

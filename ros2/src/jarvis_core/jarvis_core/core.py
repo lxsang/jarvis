@@ -1,11 +1,12 @@
 import rclpy
 from rclpy.node import Node
-from .common import JarvisSerial
+from .common import JarvisSerial, CMDFrame, LogFrame, LOG_WARNING
 from .imu import QuaternionFilter
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Int16
 from geometry_msgs.msg import Point
 import math
+import threading
 
 
 class JarvisCore(Node):
@@ -15,12 +16,26 @@ class JarvisCore(Node):
 
     def __init__(self):
         super().__init__('jarvis_core')
+        self.alive = True
         self.imu_pub = self.create_publisher(Imu, 'imu', 10)
+        # publisher
         self.bat_pub = self.create_publisher(Float32, 'battery', 10)
         self.ltick_pub = self.create_publisher(Int16, 'left_tick', 10)
         self.rtick_pub = self.create_publisher(Int16, 'right_tick', 10)
+        # subscriber
+        self.lpwm_sub = self.create_subscription(
+            Int16,
+            'left_motor',
+            self.lpwm_listener_callback,
+            10)
 
-        timer_period = 0.01  # 100 hz
+        self.lpwm_sub = self.create_subscription(
+            Int16,
+            'right_motor',
+            self.rpwm_listener_callback,
+            10)
+
+        timer_period = 0.02  # 100 hz
         self.imu = Imu()
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.filter = QuaternionFilter(self)
@@ -37,6 +52,32 @@ class JarvisCore(Node):
         self.battery = Float32()
         self.left_tick = Int16()
         self.right_tick = Int16()
+
+        self.cmd = CMDFrame()
+        self.cmd.l_pwm = 0
+        self.cmd.r_pwm = 0
+        self.endpoint = JarvisSerial()
+
+    def rpwm_listener_callback(self, msg):
+        self.cmd.r_pwm = msg.data
+        self.endpoint.send_frame(self.cmd)
+
+    def lpwm_listener_callback(self, msg):
+        # set log level
+        # log_setting = LogFrame()
+        # log_setting.level = LOG_WARNING
+        # self.endpoint.send_frame(log_setting)
+        self.cmd.l_pwm = msg.data
+        self.endpoint.send_frame(self.cmd)
+
+    def get_sensors_data(self):
+        while self.alive:
+            frame = self.endpoint.read_frame()
+            if frame != None:
+                if frame.type == 0:
+                    self.update(frame)
+                else:
+                    frame.log(self.get_logger())
 
     def update(self, frame):
         self.battery.data = frame.battery
@@ -103,17 +144,15 @@ class JarvisCore(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    endpoint = JarvisSerial()
+
     node = JarvisCore()
+    thread = threading.Thread(target=node.get_sensors_data)
+    thread.start()
     while rclpy.ok():
-        frame = endpoint.read_frame()
-        if frame != None:
-            if frame.type == 0:
-                node.update(frame)
-            else:
-                node.get_logger().info('Arduino: %s' % frame.log_str)
+        # ()
         rclpy.spin_once(node)
 
+    node.alive = False
     node.destroy_node()
     rclpy.shutdown()
 

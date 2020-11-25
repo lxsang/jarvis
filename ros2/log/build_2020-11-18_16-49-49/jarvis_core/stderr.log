@@ -1,5 +1,0 @@
-  File "/home/jarvis/workspace/ros2/install/jarvis_core/lib/python3.8/site-packages/jarvis_core/core.py", line 56
-    else if raw_frame[0] == FRAME_TYPE_LOG:
-         ^
-SyntaxError: invalid syntax
-

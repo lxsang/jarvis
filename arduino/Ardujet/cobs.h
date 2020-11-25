@@ -5,20 +5,20 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/*
+    /*
  * cobs_encode stuffs "length" bytes of data
  * at the location pointed to by "ptr", writing
  * the output to the location pointed to by "dst".
  *
  * Returns the length of the encoded data.
  */
-size_t cobs_encode(const uint8_t *ptr, size_t length, uint8_t *dst);
+    size_t cobs_encode(const uint8_t *ptr, size_t length, uint8_t *dst);
 
-
-/*
+    /*
  * cobs_decode decodes "length" bytes of data at
  * the location pointed to by "ptr", writing the
  * output to the location pointed to by "dst".
@@ -26,7 +26,7 @@ size_t cobs_encode(const uint8_t *ptr, size_t length, uint8_t *dst);
  * Returns the length of the decoded data
  * (which is guaranteed to be <= length).
  */
-size_t cobs_decode(const uint8_t *ptr, size_t length, uint8_t *dst);
+    size_t cobs_decode(uint8_t *ptr, size_t length);
 
 #ifdef __cplusplus
 }
