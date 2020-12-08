@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'core = jarvis_core.core:main'
+            'base = jarvis_core.base:main'
         ],
     },
 )
