@@ -9,7 +9,7 @@ import math
 import threading
 
 
-class JarvisCore(Node):
+class JettyNode(Node):
     """
     docstring
     """
@@ -145,7 +145,7 @@ class JarvisCore(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    node = JarvisCore()
+    node = JettyNode()
     thread = threading.Thread(target=node.get_sensors_data)
     thread.start()
     while rclpy.ok():
