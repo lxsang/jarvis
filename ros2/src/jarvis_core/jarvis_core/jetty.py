@@ -15,7 +15,7 @@ class JarvisCore(Node):
     """
 
     def __init__(self):
-        super().__init__('jarvis_core')
+        super().__init__('jetty')
         self.alive = True
         self.imu_pub = self.create_publisher(Imu, 'imu', 10)
         # publisher
