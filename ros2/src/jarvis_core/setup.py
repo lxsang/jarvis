@@ -21,7 +21,9 @@ setup(
     entry_points={
         'console_scripts': [
             'jetty = jarvis_core.jetty:main',
-            'stat = jarvis_core.stat:main'
+            'stat = jarvis_core.stat:main',
+            'mmetric = jarvis_core.mmetric:main',
+            'camera = jarvis_core.camera:main'
         ],
     },
 )
