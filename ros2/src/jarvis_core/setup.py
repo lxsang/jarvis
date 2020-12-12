@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'jetty = jarvis_core.jetty:main'
+            'jetty = jarvis_core.jetty:main',
+            'stat = jarvis_core.stat:main'
         ],
     },
 )
