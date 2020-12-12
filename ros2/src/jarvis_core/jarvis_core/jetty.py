@@ -25,13 +25,13 @@ class JettyNode(Node):
         # subscriber
         self.lpwm_sub = self.create_subscription(
             Int16,
-            'left_motor',
+            'left_motor_pwm',
             self.lpwm_listener_callback,
             10)
 
         self.lpwm_sub = self.create_subscription(
             Int16,
-            'right_motor',
+            'right_motor_pwm',
             self.rpwm_listener_callback,
             10)
 
