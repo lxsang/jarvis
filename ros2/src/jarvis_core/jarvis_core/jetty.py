@@ -16,26 +16,35 @@ class JettyNode(Node):
 
     def __init__(self):
         super().__init__('jetty')
-        self.alive = True
-        self.imu_pub = self.create_publisher(Imu, 'imu', 10)
+        
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('imu_topic', "jetty_imu"),
+                ('battery_topic', "jetty_battery"),
+                ('left_tick_topic', "jetty_left_tick"),
+                ('right_tick_topic', "jetty_right_tick"),
+                ('left_motor_pwm_topic', "jetty_left_pwm"),
+                ('right_motor_pwm_topic', "jetty_right_pwm"),
+                ('time_period', 0.03),
+            ]
+        )
+        imu_topic = self.get_parameter("imu_topic").value
+        battery_topic = self.get_parameter("battery_topic").value
+        left_tick_topic = self.get_parameter("left_tick_topic").value
+        right_tick_topic = self.get_parameter("right_tick_topic").value
+        self.left_motor_pwm_topic = self.get_parameter("left_motor_pwm_topic").value
+        
+        self.right_motor_pwm_topic = self.get_parameter("right_motor_pwm_topic").value
+        
+        self.imu_pub = self.create_publisher(Imu, imu_topic, 10)
         # publisher
-        self.bat_pub = self.create_publisher(Float32, 'battery', 10)
-        self.ltick_pub = self.create_publisher(Int16, 'left_tick', 10)
-        self.rtick_pub = self.create_publisher(Int16, 'right_tick', 10)
-        # subscriber
-        self.lpwm_sub = self.create_subscription(
-            Int16,
-            'left_motor_pwm',
-            self.lpwm_listener_callback,
-            10)
+        self.bat_pub = self.create_publisher(Float32, battery_topic, 10)
+        self.ltick_pub = self.create_publisher(Int16, left_tick_topic, 10)
+        self.rtick_pub = self.create_publisher(Int16, right_tick_topic, 10)
+        
 
-        self.lpwm_sub = self.create_subscription(
-            Int16,
-            'right_motor_pwm',
-            self.rpwm_listener_callback,
-            10)
-
-        timer_period = 0.02  # 100 hz
+        timer_period = self.get_parameter("time_period").value
         self.imu = Imu()
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.filter = QuaternionFilter(self)
@@ -52,15 +61,28 @@ class JettyNode(Node):
         self.battery = Float32()
         self.left_tick = Int16()
         self.right_tick = Int16()
+        self.synchronised = False
 
         self.cmd = CMDFrame()
         self.cmd.l_pwm = 0
         self.cmd.r_pwm = 0
         self.endpoint = JarvisSerial()
+        self.has_data = False
+        
+        self.get_logger().info(
+            "imu: %s, left_tick: %s, right_tick: %s, left_pwm: %s, right_pwm: %s, time_period: %.3f"
+                %(  
+                    imu_topic,
+                    left_tick_topic,
+                    right_tick_topic,
+                    self.left_motor_pwm_topic,
+                    self.right_motor_pwm_topic,
+                    timer_period))
 
     def rpwm_listener_callback(self, msg):
         self.cmd.r_pwm = msg.data
-        self.endpoint.send_frame(self.cmd)
+        if self.synchronised:
+            self.endpoint.send_frame(self.cmd)
 
     def lpwm_listener_callback(self, msg):
         # set log level
@@ -68,18 +90,34 @@ class JettyNode(Node):
         # log_setting.level = LOG_WARNING
         # self.endpoint.send_frame(log_setting)
         self.cmd.l_pwm = msg.data
-        self.endpoint.send_frame(self.cmd)
+        if self.synchronised:
+            self.endpoint.send_frame(self.cmd)
 
     def get_sensors_data(self):
-        while self.alive:
+        while rclpy.ok():
             frame = self.endpoint.read_frame()
             if frame != None:
                 if frame.type == 0:
+                    if not self.synchronised:
+                        self.synchronised = True
+                        # create subscriber
+                        self.lpwm_sub = self.create_subscription(
+                            Int16,
+                            self.left_motor_pwm_topic,
+                            self.lpwm_listener_callback,
+                            10)
+                
+                        self.lpwm_sub = self.create_subscription(
+                            Int16,
+                            self.right_motor_pwm_topic,
+                            self.rpwm_listener_callback,
+                            10)
                     self.update(frame)
                 else:
                     frame.log(self.get_logger())
 
     def update(self, frame):
+        self.has_data = True
         self.battery.data = frame.battery
         self.left_tick.data = frame.left_tick
         self.right_tick.data = frame.right_tick
@@ -135,26 +173,26 @@ class JettyNode(Node):
         self.imu.linear_acceleration_covariance[8] = 0.03
 
     def timer_callback(self):
-        self.imu_pub.publish(self.imu)
-        self.bat_pub.publish(self.battery)
-        self.ltick_pub.publish(self.left_tick)
-        self.rtick_pub.publish(self.right_tick)
+        if self.has_data:
+            self.imu_pub.publish(self.imu)
+            self.bat_pub.publish(self.battery)
+            self.ltick_pub.publish(self.left_tick)
+            self.rtick_pub.publish(self.right_tick)
+            self.has_data = False
         # self.get_logger().info('Publishing: "%s"' % msg.data)
 
 
 def main(args=None):
     rclpy.init(args=args)
-
     node = JettyNode()
     thread = threading.Thread(target=node.get_sensors_data)
-    thread.start()
-    while rclpy.ok():
-        # ()
-        rclpy.spin_once(node)
-
-    node.alive = False
-    node.destroy_node()
-    rclpy.shutdown()
+    try:
+        thread.start()
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        # thread.join()
+        node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

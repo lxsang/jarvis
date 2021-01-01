@@ -7,7 +7,7 @@ class JarvisMetric(Node):
     def __init__(self):
         super().__init__('jarvis_mmetric')
         # timer_period = 0.1  # 1 hz
-        self.tick_per_m = 4495
+        self.tick_per_m = 4400
         self.motor_ratio = 1.0
         self.last_ltick = None
         self.last_rtick = None
@@ -59,8 +59,8 @@ def main(args=None):
     rclpy.init(args=args)
 
     node = JarvisMetric()
-
-    node.set_speed(150)
+    rclpy.spin_once(node)
+    node.set_speed(100)
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()

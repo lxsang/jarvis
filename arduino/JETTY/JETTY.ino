@@ -69,8 +69,8 @@
 
 #define ADS_MULTIPLIER 3.0F
 
-#define LOG_PREFIX "[Ardujet]:"
-#define LOG_PREFIX_LEN 10u
+#define LOG_PREFIX "[JETTY]:"
+#define LOG_PREFIX_LEN 8u
 
 #define FRAME_CMD_LEN 7u
 #define FRAME_LOG_CMD_LEN 4u
@@ -339,7 +339,7 @@ void setup()
     // wait for the serial link becomes available
     //while (!Serial.available())
     //    ;
-    delay(5000);
+    //delay(5000);
     log(LOG_INFO, "Init system. Firmware version %d.%d", FW_MAJOR, FW_MINOR);
     status = mpu.initialize();
     if (status == MPU_OK)
@@ -385,5 +385,6 @@ void loop()
     i = 0;
     process_cmd();
     send_sensors_data();
+    // around 50hz
     delay(5);
 }

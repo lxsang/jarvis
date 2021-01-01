@@ -10,6 +10,9 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name, ['launch/core.py']),
+        ('share/' + package_name, ['launch/vision.py']),
+        ('share/' + package_name, ['config/config.yaml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -23,7 +26,10 @@ setup(
             'jetty = jarvis_core.jetty:main',
             'stat = jarvis_core.stat:main',
             'mmetric = jarvis_core.mmetric:main',
-            'camera = jarvis_core.camera:main'
+            'camera = jarvis_core.camera:main',
+            't2mvel = jarvis_core.t2mvel:main',
+            'wv2pwm = jarvis_core.wv2pwm:main',
+            'camviewer = jarvis_core.camera_viewer:main'
         ],
     },
 )

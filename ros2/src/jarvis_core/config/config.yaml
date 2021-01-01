@@ -1,0 +1,56 @@
+jarvis:
+    t2mvel:
+        ros__parameters:
+            wheel_space: 0.192
+            time_period: 0.033
+            lwheel_vel_topic: "left_wheel_vel_setpoint"
+            rwheel_vel_topic: "right_wheel_vel_setpoint"
+            cmd_vel_topic: "cmd_vel"
+    teleop_node:
+        ros__parameters:
+            scale_linear.x: 0.5
+            scale_linear.y: 0.5
+            scale_angular.yaw: 2.7
+    jetty:
+        ros__parameters:
+            imu_topic: "imu"
+            battery_topic: "battery"
+            left_tick_topic: "left_tick"
+            right_tick_topic: "right_tick"
+            left_motor_pwm_topic: "left_motor_pwm"
+            right_motor_pwm_topic: "right_motor_pwm"
+            time_period: 0.033
+    left_wv2pwm:
+        ros__parameters:
+            kp: 0.3
+            ki: 0.35
+            kd: 0.0001
+            ticks_per_meter: 4400
+            time_period: 0.033
+            wheel_vel_setpoint_topic: 'left_wheel_vel_setpoint'
+            wheel_tick_topic: 'left_tick'
+            motor_pwm_topic: 'left_motor_pwm'
+            real_wheel_vel_topic: 'left_wheel_vel'
+    right_wv2pwm:
+        ros__parameters:
+            kp: 0.3
+            ki: 0.35
+            kd: 0.0001
+            ticks_per_meter: 4400
+            time_period: 0.033
+            wheel_vel_setpoint_topic: 'right_wheel_vel_setpoint'
+            wheel_tick_topic: 'right_tick'
+            motor_pwm_topic: 'right_motor_pwm'
+            real_wheel_vel_topic: 'right_wheel_vel'
+    stat:
+        ros__parameters:
+            bat_min_voltage: 3200.0
+            bat_max_voltage: 3400.0
+            battery_topic: "battery"
+            time_period: 1.0
+    camera:
+        ros__parameters:
+            width: 320
+            height: 240
+            camera_topic: "camera"
+            time_period: 0.15

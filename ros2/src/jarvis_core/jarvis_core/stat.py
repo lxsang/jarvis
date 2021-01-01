@@ -49,17 +49,26 @@ class Display:
 
 class JarvisStat(Node):
     def __init__(self):
-        super().__init__('jarvis_stat')
-        timer_period = 1.0  # 1 hz
+        super().__init__('stat')
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('bat_min_voltage', 3300.0),
+                ('bat_max_voltage', 3400.0),
+                ('battery_topic', "jarvis_battery"),
+                ('time_period', 0.5),
+            ]
+        )
+        timer_period = self.get_parameter("time_period").value
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.bat_sub = self.create_subscription(
             Float32,
-            'battery',
+            self.get_parameter("battery_topic").value,
             self.bat_callback,
             10)
 
-        self.bat_min_voltage = 3300.0
-        self.bat_max_voltage = 3750
+        self.bat_min_voltage = self.get_parameter("bat_min_voltage").value
+        self.bat_max_voltage = self.get_parameter("bat_max_voltage").value
         self.is_online = False
         self.bat_safe_zone = self.bat_max_voltage - self.bat_min_voltage
         # get my IP address
