@@ -54,3 +54,17 @@ jarvis:
             height: 240
             camera_topic: "camera"
             time_period: 0.15
+    odometry:
+        ros__parameters:
+            lelf_wheel_tick_topic: "left_tick"
+            right_wheel_tick_topic: "right_tick"
+            ticks_per_meter: 4400
+            wheels_space: 0.192
+            odom_frame: "odom"
+            odom_topic: "odom"
+            base_frame: "base_link"
+            time_period: 0.02
+            left_wheel_variance_coef: 1e-4
+            right_wheel_variance_coef: 1e-4
+            publish_tf: true
+            slip_compensate: 0.7

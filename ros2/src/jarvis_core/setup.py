@@ -12,6 +12,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name, ['launch/core.py']),
         ('share/' + package_name, ['launch/vision.py']),
+        ('share/' + package_name, ['launch/navigation.py']),
         ('share/' + package_name, ['config/config.yaml']),
     ],
     install_requires=['setuptools'],
@@ -29,7 +30,8 @@ setup(
             'camera = jarvis_core.camera:main',
             't2mvel = jarvis_core.t2mvel:main',
             'wv2pwm = jarvis_core.wv2pwm:main',
-            'camviewer = jarvis_core.camera_viewer:main'
+            'camviewer = jarvis_core.camera_viewer:main',
+            'odometry = jarvis_core.odometry:main'
         ],
     },
 )

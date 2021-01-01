@@ -22,8 +22,8 @@ def generate_launch_description():
         Node(
             package='jarvis_core',
             namespace='jarvis',
-            executable='camera',
-            name='camera',
+            executable='odometry',
+            name='odometry',
             output='screen',
             parameters=[
                 parameters_file_path
