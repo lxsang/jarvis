@@ -8,9 +8,9 @@ jarvis:
             cmd_vel_topic: "cmd_vel"
     teleop_node:
         ros__parameters:
-            scale_linear.x: 0.5
+            scale_linear.x: 0.7
             scale_linear.y: 0.5
-            scale_angular.yaw: 2.7
+            scale_angular.yaw: 3.0
     jetty:
         ros__parameters:
             imu_topic: "imu"
@@ -44,8 +44,9 @@ jarvis:
             real_wheel_vel_topic: 'right_wheel_vel'
     stat:
         ros__parameters:
-            bat_min_voltage: 3200.0
-            bat_max_voltage: 3400.0
+            bat_min_voltage: 10000.0
+            bat_max_voltage: 12600.0
+            bat_voltage_ratio: 3.36
             battery_topic: "battery"
             time_period: 1.0
     camera:

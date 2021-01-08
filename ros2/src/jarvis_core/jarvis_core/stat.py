@@ -53,9 +53,10 @@ class JarvisStat(Node):
         self.declare_parameters(
             namespace='',
             parameters=[
-                ('bat_min_voltage', 3300.0),
-                ('bat_max_voltage', 3400.0),
+                ('bat_min_voltage', 10800.0),
+                ('bat_max_voltage', 12600.0),
                 ('battery_topic', "jarvis_battery"),
+                ('bat_voltage_ratio', 3.36),
                 ('time_period', 0.5),
             ]
         )
@@ -69,6 +70,7 @@ class JarvisStat(Node):
 
         self.bat_min_voltage = self.get_parameter("bat_min_voltage").value
         self.bat_max_voltage = self.get_parameter("bat_max_voltage").value
+        self.bat_voltage_ratio = self.get_parameter("bat_voltage_ratio").value
         self.is_online = False
         self.bat_safe_zone = self.bat_max_voltage - self.bat_min_voltage
         # get my IP address
@@ -96,8 +98,10 @@ class JarvisStat(Node):
             self.display.log((0, 18),    MemUsage.decode("utf-8"))
             self.display.log((0, 27),    Disk.decode("utf-8"))
             self.display.log((0, 36),    "CPU temp.(C): " + str(cpu_temp))
-            self.display.log((0, 45), "Battery: " +
-                             "{:.2f}".format(self.map(self.voltage)) + "%")
+            self.display.log((0, 45), "Bat.:" +
+                             "{:.2f}".format(self.map(self.voltage)) + "%" +
+                             " ({:.2f}v)".format(self.voltage / 1000.0)
+                            )
 
             # Display image.
             self.display.show()
@@ -145,7 +149,7 @@ class JarvisStat(Node):
         return result
 
     def bat_callback(self, msg):
-        self.voltage = msg.data
+        self.voltage = msg.data*self.bat_voltage_ratio
 
 
 def main(args=None):

@@ -12,7 +12,7 @@ class CameraViewer(Node):
         self.declare_parameters(
             namespace='',
             parameters=[
-                ('time_period', 0.2),
+                ('time_period', 0.033),
                 ('camera_topic', '/jarvis/camera')
             ]
         )
