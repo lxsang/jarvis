@@ -36,7 +36,7 @@
         "}\n"
 
 #define MAX_BUF 256
-#define SLEEP_TIME 300000 // usec
+#define SLEEP_TIME 500000 // usec
 
 typedef struct
 {
