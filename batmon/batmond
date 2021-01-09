@@ -1,0 +1,2 @@
+#! /bin/bash
+/usr/bin/batmon -o /var/jarvis:fbf070ddea3ea90d07f456540b405d302554ec82

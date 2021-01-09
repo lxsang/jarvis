@@ -1,0 +1,11 @@
+[Unit]
+Description=Jarvis battery monitor
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/batmond
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
