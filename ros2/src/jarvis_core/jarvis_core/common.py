@@ -231,6 +231,7 @@ class JarvisSerial():
 
     def __init__(self, dev='/dev/ttyACM0', baud=115200):
         self.serial = serial.Serial(dev, baud)
+        self.buf = bytearray()
 
     # def sync(self):
     #    if not self.is_sync:
@@ -238,11 +239,23 @@ class JarvisSerial():
     #        self.is_sync = True
 
     def read_frame(self):
-        # if self.serial.inWaiting() > 0:
-        # if self.is_sync == False:
-        #    self.sync()
-        bytes_frame = self.serial.read_until(b'\x00')
-        return BaseFrame.decode(bytearray(bytes_frame))
+        i = self.buf.find(b'\x00')
+        if i >= 0:
+            r = self.buf[:i+1]
+            self.buf = self.buf[i+1:]
+            return BaseFrame.decode(r)
+        while True:
+            i = max(1, min(2048, self.serial.in_waiting))
+            data = self.serial.read(i)
+            i = data.find(b'\x00')
+            if i >= 0:
+                r = self.buf + data[:i+1]
+                self.buf[0:] = data[i+1:]
+                return BaseFrame.decode(r)
+            else:
+                self.buf.extend(data)
+        #bytes_frame = self.serial.read_until(b'\x00')
+        #return BaseFrame.decode(bytearray(bytes_frame))
         # else:
         #    return None
 

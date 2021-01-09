@@ -19,6 +19,14 @@ jarvis:
             right_tick_topic: "right_tick"
             left_motor_pwm_topic: "left_motor_pwm"
             right_motor_pwm_topic: "right_motor_pwm"
+            serial_port: "/dev/ttyACM0"
+            # this configuration is used only if the
+            # ADS 1115 is connected directly to the Nano
+            # and is handled by the ads1015 linux driver
+            # empty this value if the sensor is handled by
+            # Arduino
+            battery_hwmon_input: "/sys/class/hwmon/hwmon2/device/in3_input"
+            baudrate: 115200
             time_period: 0.033
     left_wv2pwm:
         ros__parameters:

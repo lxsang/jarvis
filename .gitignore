@@ -3,3 +3,73 @@ arduino/**/build
 ros2/log
 ros2/install
 ros2/build
+*._*
+*.d
+*.deb
+.vscode
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+modules.order
+Module.symvers
+Makefile.old
+dkms.con
+.DS_Store
+.*
+*.cache
+Makefile
+antd
+compile
+config.guess
+depcomp
+install-sh
+missing
+libtool
+config.log
+config.status
+config.sub
+configure
+aclocal.m4
+ltmain.sh
+Makefile.in

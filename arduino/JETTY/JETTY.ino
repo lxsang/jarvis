@@ -1,5 +1,12 @@
+
+/**Uncomment the following line if we want to use ADS1115 with arduino*/
+//#define HAS_ADS10115
+
 #include <Adafruit_MotorShield.h>
+
+#ifdef HAS_ADS10115
 #include <Adafruit_ADS1015.h>
+#endif
 #include <Wire.h>
 #include <stdarg.h>
 
@@ -67,7 +74,9 @@
 
 #define SENSOR_DATA_SIZE (OFFSET_RIGHT_TICK + 2)
 
+#ifdef HAS_ADS10115
 #define ADS_MULTIPLIER 3.0F
+#endif
 
 #define LOG_PREFIX "[JETTY]:"
 #define LOG_PREFIX_LEN 8u
@@ -103,7 +112,9 @@ static int16_t right_motor_tick = 0;
 // AD0 high = 0x69
 MPU9250 mpu;
 
+#ifdef HAS_ADS10115
 Adafruit_ADS1015 ads;
+#endif
 
 // motor
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -254,8 +265,10 @@ static void send_sensors_data()
     FLOAT_TO_BE(mpu.getMag(1), raw_tx_frame_ptr + OFFSET_MAG_Y);
     FLOAT_TO_BE(mpu.getMag(2), raw_tx_frame_ptr + OFFSET_MAG_Z);
 
+#ifdef HAS_ADS10115
     serializable_obj.u16 = ads.readADC_Differential_2_3();
     FLOAT_TO_BE(serializable_obj.u16 * ADS_MULTIPLIER, raw_tx_frame_ptr + OFFSET_BAT);
+#endif
 
     UINT16_TO_BE(left_motor_tick, raw_tx_frame_ptr + OFFSET_LEFT_TICK);
     UINT16_TO_BE(right_motor_tick, raw_tx_frame_ptr + OFFSET_RIGHT_TICK);
@@ -352,6 +365,7 @@ void setup()
         log(LOG_ERR, "Cannot initialize IMU device, status: %d", status);
     }
 
+#ifdef HAS_ADS10115
     log(LOG_INFO, "starting ads1115");
     // init the ads1115
     //                                                                ADS1015  ADS1115
@@ -363,6 +377,7 @@ void setup()
     // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
     // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
     ads.begin();
+#endif
 
     log(LOG_INFO, "starting motor controller");
     // Init the motor

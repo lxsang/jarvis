@@ -6,6 +6,7 @@ from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32, Int16
 from geometry_msgs.msg import Point
 import math
+import sys
 import threading
 
 
@@ -26,6 +27,9 @@ class JettyNode(Node):
                 ('right_tick_topic', "jetty_right_tick"),
                 ('left_motor_pwm_topic', "jetty_left_pwm"),
                 ('right_motor_pwm_topic', "jetty_right_pwm"),
+                ('battery_hwmon_input', ""),
+                ('serial_port', "/dev/ttyACM0"),
+                ('baudrate', 115200),
                 ('time_period', 0.03),
             ]
         )
@@ -36,6 +40,7 @@ class JettyNode(Node):
         self.left_motor_pwm_topic = self.get_parameter("left_motor_pwm_topic").value
         
         self.right_motor_pwm_topic = self.get_parameter("right_motor_pwm_topic").value
+        self.battery_hwmon_input = self.get_parameter("battery_hwmon_input").value
         
         self.imu_pub = self.create_publisher(Imu, imu_topic, 10)
         # publisher
@@ -47,6 +52,11 @@ class JettyNode(Node):
         timer_period = self.get_parameter("time_period").value
         self.imu = Imu()
         self.timer = self.create_timer(timer_period, self.timer_callback)
+        
+        if(self.battery_hwmon_input != ""):
+            thread2 = threading.Thread(target=self.get_battery_data)
+            thread2.start()
+        
         self.filter = QuaternionFilter(self)
         self.mag_bias = Point()
         self.mag_bias.x = -189.98
@@ -66,7 +76,7 @@ class JettyNode(Node):
         self.cmd = CMDFrame()
         self.cmd.l_pwm = 0
         self.cmd.r_pwm = 0
-        self.endpoint = JarvisSerial()
+        self.endpoint = JarvisSerial(self.get_parameter("serial_port").value, self.get_parameter("baudrate").value)
         self.has_data = False
         
         self.get_logger().info(
@@ -92,6 +102,15 @@ class JettyNode(Node):
         self.cmd.l_pwm = msg.data
         if self.synchronised:
             self.endpoint.send_frame(self.cmd)
+    
+    def get_battery_data(self):
+        while rclpy.ok():
+            try:
+                with open(self.battery_hwmon_input, 'r') as file:
+                    self.battery.data = float(file.read())
+                    self.bat_pub.publish(self.battery)
+            except IOError:
+                pass
 
     def get_sensors_data(self):
         while rclpy.ok():
@@ -118,7 +137,8 @@ class JettyNode(Node):
 
     def update(self, frame):
         self.has_data = True
-        self.battery.data = frame.battery
+        if self.battery_hwmon_input == "":
+            self.battery.data = frame.battery
         self.left_tick.data = frame.left_tick
         self.right_tick.data = frame.right_tick
 
@@ -171,23 +191,24 @@ class JettyNode(Node):
         self.imu.linear_acceleration_covariance[0] = 0.03
         self.imu.linear_acceleration_covariance[4] = 0.03
         self.imu.linear_acceleration_covariance[8] = 0.03
-
+            
     def timer_callback(self):
         if self.has_data:
             self.imu_pub.publish(self.imu)
-            self.bat_pub.publish(self.battery)
             self.ltick_pub.publish(self.left_tick)
             self.rtick_pub.publish(self.right_tick)
+            if(self.battery_hwmon_input == ""):
+                self.bat_pub.publish(self.battery)
             self.has_data = False
         # self.get_logger().info('Publishing: "%s"' % msg.data)
 
 
 def main(args=None):
     rclpy.init(args=args)
-    node = JettyNode()
-    thread = threading.Thread(target=node.get_sensors_data)
     try:
-        thread.start()
+        node = JettyNode()
+        thread1 = threading.Thread(target=node.get_sensors_data)
+        thread1.start()
         rclpy.spin(node)
     except KeyboardInterrupt:
         # thread.join()
