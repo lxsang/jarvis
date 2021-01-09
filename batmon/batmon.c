@@ -216,7 +216,7 @@ int main(int argc, char *const *argv)
                     fdo = open(opt.bat_log,O_WRONLY | O_APPEND);
                     if(fdo < 0)
                     {
-                        M_ERROR(MODULE_NAME, "Unable to open output file. Battery output is disabled");
+                        //M_ERROR(MODULE_NAME, "Unable to open output file. Battery output is disabled");
                     }
                     else
                     {
