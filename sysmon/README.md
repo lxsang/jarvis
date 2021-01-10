@@ -11,3 +11,10 @@ The battery voltage value is available on user space as the content of
 ```sh
 cat /sys/class/hwmon/hwmon2/device/in3_input
 ```
+
+Statistic information that the daemon outputs:
+- battery
+- CPU usage
+- Memory usage
+- CPU/GPU temperature
+- Network trafic (Not implemented yet)
