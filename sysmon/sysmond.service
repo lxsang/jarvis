@@ -1,5 +1,5 @@
 [Unit]
-Description=Jarvis system monitor
+Description=System monitor
 
 [Service]
 Type=simple

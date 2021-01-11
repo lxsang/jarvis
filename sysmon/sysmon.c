@@ -12,6 +12,7 @@
 #include <sys/timerfd.h>
 #include <time.h>
 #include <sys/time.h>
+#include <sys/statvfs.h>
 #include <math.h>
 
 #include "ini.h"
@@ -50,6 +51,8 @@
             "\"mem_available\": %lu," \
             "\"mem_swap_total\": %lu," \
             "\"mem_swap_free\": %lu," \
+            "\"disk_total\": %lu," \
+            "\"disk_free\": %lu," \
             "\"net\":[%s]" \
         "}"
 
@@ -104,6 +107,12 @@ typedef struct
     float percent;
 } sys_cpu_t;
 
+typedef struct {
+    char mount_path[MAX_BUF];
+    unsigned long d_total;
+    unsigned long d_free;
+} sys_disk_t;
+
 typedef struct 
 {
     unsigned long m_total;
@@ -123,6 +132,7 @@ typedef struct {
     sys_mem_t mem;
     sys_temp_t temp;
     sys_net_t net;
+    sys_disk_t disk;
     int n_cpus;
     struct itimerspec sample_period;
     int pwoff_cd;
@@ -426,6 +436,20 @@ static int read_net_statistic(app_data_t* opts)
     return 0;
 }
 
+static int read_disk_usage(app_data_t* opts)
+{
+    struct statvfs stat;
+    int ret = statvfs(opts->disk.mount_path, &stat);
+    if(ret < 0)
+    {
+        M_ERROR(MODULE_NAME, "Unable to query disk usage of %s: %s", opts->disk.mount_path, strerror(errno));
+        return -1;
+    }
+    opts->disk.d_total = stat.f_blocks * stat.f_frsize;
+    opts->disk.d_free = stat.f_bfree * stat.f_frsize;
+    return 0;
+}
+
 static int log_to_file(app_data_t* opts)
 {
     int ret,fd;
@@ -495,8 +519,11 @@ static int log_to_file(app_data_t* opts)
         opts->mem.m_available,
         opts->mem.m_swap_total,
         opts->mem.m_swap_free,
+        opts->disk.d_total,
+        opts->disk.d_free,
         net_buf
         );
+    printf("%s \n", out_buf);
     ret = guard_write(fd,out_buf,strlen(out_buf));
     if(ret <= 0)
     {
@@ -570,6 +597,10 @@ static int ini_handle(void *user_data, const char *section, const char *name, co
     {
         (void)strncpy(opts->temp.gpu_temp_file, value, MAX_BUF-1);
     }
+    else if(EQU(name, "disk_mount_point"))
+    {
+        (void)strncpy(opts->disk.mount_path, value, MAX_BUF-1);
+    }
     else if(EQU(name, "network_interfaces"))
     {
         // parsing the network interfaces
@@ -619,6 +650,8 @@ static int load_config(app_data_t* opts)
     (void)memset(&opts->mem, '\0', sizeof(opts->mem));
     (void)memset(&opts->temp, '\0', sizeof(opts->temp));
     (void)memset(&opts->net, '\0', sizeof(opts->net));
+    (void)memset(&opts->disk, '\0', sizeof(opts->disk));
+    opts->disk.mount_path[0] = '/';
     
     M_LOG(MODULE_NAME, "Use configuration: %s", opts->conf_file);
     if (ini_parse(opts->conf_file, ini_handle, opts) < 0)
@@ -765,9 +798,10 @@ int main(int argc, char *const *argv)
         {
             M_ERROR(MODULE_NAME, "Unable to query network statistic");
         }
-        // proc/net/dev
-        //or
-        ///sys/class/net/wlan0/statistics/
+        if(read_disk_usage(&opts) == -1)
+        {
+            M_ERROR(MODULE_NAME, "Unable to query disk usage");
+        }
         // log to file
         if(log_to_file(&opts) == -1)
         {
