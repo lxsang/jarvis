@@ -19,6 +19,7 @@
 #define DEFAULT_CONF_FILE (PREFIX "/etc/sysmond.conf")
 #define MODULE_NAME "sysmon"
 #define DEFAULT_INPUT "/sys/class/hwmon/hwmon2/device/in3_input"
+#define NET_INF_STAT_PT "/sys/class/net/%s/statistics/%s"
 
 #define LOG_INIT(m) do { \
         setlogmask (LOG_UPTO (LOG_NOTICE)); \
@@ -33,7 +34,8 @@
 		__LINE__, ##__VA_ARGS__)
 		
 #define JSON_FMT "{" \
-            "\"stamp\": %ld.%ld," \
+            "\"stamp_sec\": %lu," \
+            "\"stamp_usec\": %lu," \
             "\"battery\": %.3f," \
             "\"battery_percent\": %.3f," \
             "\"battery_max_voltage\": %d," \
@@ -41,18 +43,27 @@
             "\"cpu_temp\": %d," \
             "\"gpu_temp\": %d," \
             "\"cpu_usages\":[%s]," \
-            "\"mem_total\": %d," \
-            "\"mem_free\": %d," \
-            "\"mem_used\": %d," \
-            "\"mem_buff_cache\": %d," \
-            "\"mem_available\": %d," \
-            "\"mem_swap_total\": %d," \
-            "\"mem_swap_free\": %d" \
+            "\"mem_total\": %lu," \
+            "\"mem_free\": %lu," \
+            "\"mem_used\": %lu," \
+            "\"mem_buff_cache\": %lu," \
+            "\"mem_available\": %lu," \
+            "\"mem_swap_total\": %lu," \
+            "\"mem_swap_free\": %lu," \
+            "\"net\":[%s]" \
         "}"
+
+#define JSON_NET_FMT "{" \
+            "\"name\":\"%s\"," \
+            "\"rx\": %lu," \
+            "\"tx\": %lu," \
+            "\"rx_rate\": %.3f," \
+            "\"tx_rate\": %.3f" \
+        "},"
 
 #define MAX_BUF 256
 #define EQU(a,b) (strncmp(a,b,MAX_BUF) == 0)
-
+#define MAX_NETWORK_INF 8
 typedef struct
 {
     char bat_in[MAX_BUF];
@@ -72,22 +83,36 @@ typedef struct
     uint16_t gpu;
 } sys_temp_t;
 
+typedef struct {
+    char name[32];
+    unsigned long tx;
+    unsigned long rx;
+    float rx_rate;
+    float tx_rate;
+} sys_net_inf_t;
+
+typedef struct {
+    uint8_t n_intf;
+    /*Monitor up to 8 interfaces*/
+    sys_net_inf_t interfaces[MAX_NETWORK_INF];
+} sys_net_t;
+
 typedef struct
 {
-    long int last_idle;
-    long int last_sum;
+    unsigned long last_idle;
+    unsigned long last_sum;
     float percent;
 } sys_cpu_t;
 
 typedef struct 
 {
-    uint32_t m_total;
-    uint32_t m_free;
-    uint32_t m_available;
-    uint32_t m_cache;
-    uint32_t m_buffer;
-    uint32_t m_swap_total;
-    uint32_t m_swap_free;
+    unsigned long m_total;
+    unsigned long m_free;
+    unsigned long m_available;
+    unsigned long m_cache;
+    unsigned long m_buffer;
+    unsigned long m_swap_total;
+    unsigned long m_swap_free;
 } sys_mem_t;
 
 typedef struct {
@@ -97,6 +122,7 @@ typedef struct {
     sys_cpu_t* cpus;
     sys_mem_t mem;
     sys_temp_t temp;
+    sys_net_t net;
     int n_cpus;
     struct itimerspec sample_period;
     int pwoff_cd;
@@ -206,7 +232,7 @@ static int read_cpu_info(app_data_t* opts)
     int fd, ret, j, i = 0;
     const char d[2] = " ";
 	char* token;
-	long int sum = 0, idle = 0;
+	unsigned long sum = 0, idle = 0;
     fd = open("/proc/stat", O_RDONLY);
     if(fd < 0)
     {
@@ -225,9 +251,9 @@ static int read_cpu_info(app_data_t* opts)
             {
                 token = strtok(NULL,d);
                 if(token!=NULL){
-                    sum += atoi(token);
+                    sum += strtoul(token, NULL, 10);
                     if(j==3)
-                        idle = atoi(token);
+                        idle = strtoul(token, NULL, 10);
                     j++;
                 }
             }
@@ -254,7 +280,7 @@ static int read_mem_info(app_data_t* opts)
 {
     int fd, ret;
     const char d[2] = " ";
-    uint32_t data[7];
+    unsigned long data[7];
 	char* token;
     fd = open("/proc/meminfo", O_RDONLY);
     if(fd < 0)
@@ -268,7 +294,7 @@ static int read_mem_info(app_data_t* opts)
         token = strtok(NULL,d);
         if(token != NULL)
         {
-            data[i] = (uint32_t)atoi(token);
+            data[i] = (unsigned long)strtoul(token, NULL, 10);
         }
         else
         {
@@ -347,10 +373,64 @@ static int read_cpu_temp(app_data_t* opts)
     return 0;
 }
 
+static int read_net_statistic(app_data_t* opts)
+{
+    int fd, ret;
+    float period;
+    long unsigned int bytes;
+    
+    period = ((float)opts->sample_period.it_value.tv_nsec) / 1.0e9;
+    for (int i = 0; i < opts->net.n_intf; i++)
+    {
+        // rx
+        (void)snprintf(buf, MAX_BUF-1, NET_INF_STAT_PT, opts->net.interfaces[i].name, "rx_bytes");
+        fd = open(buf, O_RDONLY);
+        if(fd < 0)
+        {
+            M_ERROR(MODULE_NAME, "Unable to open %s: %s", buf, strerror(errno));
+            return -1;
+        }
+        // read data to buff
+        (void)memset(buf,'\0', MAX_BUF);
+        ret = read(fd, buf, MAX_BUF);
+        (void)close(fd);
+        if(ret <= 0)
+        {
+            M_ERROR(MODULE_NAME, "Unable to read RX data of %s: %s", opts->net.interfaces[i].name, strerror(errno));
+            return -1;
+        }
+        bytes = (unsigned long) strtoul(buf, NULL, 10);
+        opts->net.interfaces[i].rx_rate = ((float)(bytes - opts->net.interfaces[i].rx) / period);
+        opts->net.interfaces[i].rx = bytes;
+        
+        (void)snprintf(buf, MAX_BUF-1, NET_INF_STAT_PT, opts->net.interfaces[i].name, "tx_bytes");
+        fd = open(buf, O_RDONLY);
+        if(fd < 0)
+        {
+            M_ERROR(MODULE_NAME, "Unable to open %s: %s", buf, strerror(errno));
+            return -1;
+        }
+        // read data to buff
+        (void)memset(buf,'\0', MAX_BUF);
+        ret = read(fd, buf, MAX_BUF);
+        (void)close(fd);
+        if(ret <= 0)
+        {
+            M_ERROR(MODULE_NAME, "Unable to read TX data of %s: %s", opts->net.interfaces[i].name, strerror(errno));
+            return -1;
+        }
+        bytes = (unsigned long) strtoul(buf, NULL, 10);
+        opts->net.interfaces[i].tx_rate = ((float)(bytes - opts->net.interfaces[i].tx) / period);
+        opts->net.interfaces[i].tx = bytes ;
+    }
+    return 0;
+}
+
 static int log_to_file(app_data_t* opts)
 {
     int ret,fd;
     char out_buf[1024];
+    char net_buf[MAX_BUF];
     if(opts->data_file_out[0] == '\0')
     {
         return 0;
@@ -363,6 +443,7 @@ static int log_to_file(app_data_t* opts)
     }
     (void)memset(buf,'\0',MAX_BUF);
     char* ptr = buf;
+    // CPU
     size_t len = 0;
     for (int i = 0; i < opts->n_cpus; i++) {
         if(MAX_BUF - len -1 <= 0)
@@ -374,6 +455,27 @@ static int log_to_file(app_data_t* opts)
         ptr = buf+len;
     }
     buf[len - 1] = '\0';
+    
+    // NET
+    len = 0;
+    ptr = net_buf;
+    for (int i = 0; i < opts->net.n_intf; i++) {
+        if(MAX_BUF - len -1 < strlen(JSON_NET_FMT))
+        {
+            break;
+        }
+        snprintf(ptr, MAX_BUF - len -1, JSON_NET_FMT,
+            opts->net.interfaces[i].name,
+            opts->net.interfaces[i].rx,
+            opts->net.interfaces[i].tx,
+            opts->net.interfaces[i].rx_rate,
+            opts->net.interfaces[i].tx_rate
+            );
+        len = strlen(net_buf);
+        ptr = net_buf+len;
+    }
+    net_buf[len - 1] = '\0';
+    
     struct timeval now;
     gettimeofday(&now, NULL);
     snprintf(out_buf, sizeof(out_buf), JSON_FMT,
@@ -392,7 +494,8 @@ static int log_to_file(app_data_t* opts)
         opts->mem.m_buffer+opts->mem.m_cache,
         opts->mem.m_available,
         opts->mem.m_swap_total,
-        opts->mem.m_swap_free
+        opts->mem.m_swap_free,
+        net_buf
         );
     ret = guard_write(fd,out_buf,strlen(out_buf));
     if(ret <= 0)
@@ -416,7 +519,10 @@ static int log_to_file(app_data_t* opts)
 static int ini_handle(void *user_data, const char *section, const char *name, const char *value)
 {
     (void)section;
-    long int period = 0;
+    unsigned long period = 0;
+    const char d[2] = ",";
+	char* token;
+	
     app_data_t* opts = (app_data_t*) user_data;
     if(EQU(name, "battery_max_voltage"))
     {
@@ -440,7 +546,7 @@ static int ini_handle(void *user_data, const char *section, const char *name, co
     }
     else if(EQU(name, "sample_period"))
     {
-        period = atoi(value)*1e6;
+        period = strtoul(value, NULL, 10)*1e6;
         opts->sample_period.it_interval.tv_nsec = period;
         opts->sample_period.it_value.tv_nsec = period;
     }
@@ -464,11 +570,26 @@ static int ini_handle(void *user_data, const char *section, const char *name, co
     {
         (void)strncpy(opts->temp.gpu_temp_file, value, MAX_BUF-1);
     }
+    else if(EQU(name, "network_interfaces"))
+    {
+        // parsing the network interfaces
+        token = strtok((char*)value,d);
+        opts->net.n_intf = 0;
+        while(token != NULL)
+        {
+            (void) strncpy(opts->net.interfaces[opts->net.n_intf].name, token, sizeof(opts->net.interfaces[opts->net.n_intf].name) - 1);
+            opts->net.n_intf++;
+            if(opts->net.n_intf >= MAX_NETWORK_INF)
+                break;
+            token = strtok(NULL,d);
+        }
+    }
     else
     {
         M_ERROR(MODULE_NAME, "Ignore unknown configuration %s = %s", name, value);
         return 0;
     }
+    
     return 1;
 }
 
@@ -497,6 +618,7 @@ static int load_config(app_data_t* opts)
     
     (void)memset(&opts->mem, '\0', sizeof(opts->mem));
     (void)memset(&opts->temp, '\0', sizeof(opts->temp));
+    (void)memset(&opts->net, '\0', sizeof(opts->net));
     
     M_LOG(MODULE_NAME, "Use configuration: %s", opts->conf_file);
     if (ini_parse(opts->conf_file, ini_handle, opts) < 0)
@@ -639,8 +761,13 @@ int main(int argc, char *const *argv)
         {
             M_ERROR(MODULE_NAME, "Unable to read CPU temperature");
         }
-        // TODO read net work trafic
-        
+        if(read_net_statistic(&opts) == -1)
+        {
+            M_ERROR(MODULE_NAME, "Unable to query network statistic");
+        }
+        // proc/net/dev
+        //or
+        ///sys/class/net/wlan0/statistics/
         // log to file
         if(log_to_file(&opts) == -1)
         {
@@ -659,6 +786,9 @@ int main(int argc, char *const *argv)
     
     if(opts.cpus)
         free(opts.cpus);
-    
+    if(tfd > 0)
+    {
+        (void)close(tfd);
+    }
     return 0;
 }
