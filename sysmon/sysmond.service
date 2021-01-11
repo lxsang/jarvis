@@ -1,5 +1,5 @@
 [Unit]
-Description=Jarvis battery monitor
+Description=Jarvis system monitor
 
 [Service]
 Type=simple

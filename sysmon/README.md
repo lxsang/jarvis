@@ -1,6 +1,6 @@
-Jetson Nano battery monitor.
+Jetson Nano system monitor.
 
-Simple service that monitors and shutdowns the system
+Simple service that monitors system resource and shutdowns the system
 when the battery is below some value
 
 This service require the ADS1115 is connected to the
@@ -13,8 +13,8 @@ cat /sys/class/hwmon/hwmon2/device/in3_input
 ```
 
 Statistic information that the daemon outputs:
-- battery
+- Battery
 - CPU usage
 - Memory usage
 - CPU/GPU temperature
-- Network trafic (Not implemented yet)
+- Network trafic
