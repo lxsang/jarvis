@@ -23,16 +23,16 @@
 
 #define LOG_INIT(m) do { \
         setlogmask (LOG_UPTO (LOG_NOTICE)); \
-	    openlog ((m), LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER); \
+        openlog ((m), LOG_CONS | LOG_PID | LOG_NDELAY, LOG_USER); \
     } while(0)
 
 
 #define M_LOG(m, a,...) syslog ((LOG_NOTICE),m "_log@[%s: %d]: " a "\n", __FILE__, \
-		__LINE__, ##__VA_ARGS__)
+        __LINE__, ##__VA_ARGS__)
 
 #define M_ERROR(m, a,...) syslog ((LOG_ERR),m "_error@[%s: %d]: " a "\n", __FILE__, \
-		__LINE__, ##__VA_ARGS__)
-		
+        __LINE__, ##__VA_ARGS__)
+        
 #define JSON_FMT "{" \
             "\"stamp_sec\": %lu," \
             "\"stamp_usec\": %lu," \
@@ -231,8 +231,8 @@ static int read_cpu_info(app_data_t* opts)
 {
     int fd, ret, j, i = 0;
     const char d[2] = " ";
-	char* token;
-	unsigned long sum = 0, idle = 0;
+    char* token;
+    unsigned long sum = 0, idle = 0;
     fd = open("/proc/stat", O_RDONLY);
     if(fd < 0)
     {
@@ -281,7 +281,7 @@ static int read_mem_info(app_data_t* opts)
     int fd, ret;
     const char d[2] = " ";
     unsigned long data[7];
-	char* token;
+    char* token;
     fd = open("/proc/meminfo", O_RDONLY);
     if(fd < 0)
     {
@@ -521,8 +521,8 @@ static int ini_handle(void *user_data, const char *section, const char *name, co
     (void)section;
     unsigned long period = 0;
     const char d[2] = ",";
-	char* token;
-	
+    char* token;
+    
     app_data_t* opts = (app_data_t*) user_data;
     if(EQU(name, "battery_max_voltage"))
     {
