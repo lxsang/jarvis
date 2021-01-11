@@ -523,7 +523,6 @@ static int log_to_file(app_data_t* opts)
         opts->disk.d_free,
         net_buf
         );
-    printf("%s \n", out_buf);
     ret = guard_write(fd,out_buf,strlen(out_buf));
     if(ret <= 0)
     {
