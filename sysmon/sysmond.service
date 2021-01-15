@@ -1,5 +1,6 @@
 [Unit]
 Description=System monitor
+After=antd-tunnel-publisher.service
 
 [Service]
 Type=simple

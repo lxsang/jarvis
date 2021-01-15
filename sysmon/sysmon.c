@@ -338,49 +338,38 @@ static int read_mem_info(app_data_t* opts)
     return 0;
 }
 
-static int read_cpu_temp(app_data_t* opts)
+static int read_temp_file(const char* file, uint16_t* output)
 {
     int fd, ret;
-    if(opts->temp.cpu_temp_file[0] != '\0')
+    if(file[0] != '\0')
     {
-       fd = open(opts->temp.cpu_temp_file, O_RDONLY);
+       fd = open(file, O_RDONLY);
         if(fd < 0)
         {
-            M_ERROR(MODULE_NAME, "Unable to open CPU temp file: %s", strerror(errno));
+            M_ERROR(MODULE_NAME, "Unable to open temp file %s : %s", file, strerror(errno));
             return -1;
         }
         (void)memset(buf, '\0', sizeof(buf));
         ret = read(fd, buf, MAX_BUF);
         if(ret < 0)
         {
-            M_ERROR(MODULE_NAME, "Unable to read CPU temperature: %s", strerror(errno));
+            M_ERROR(MODULE_NAME, "Unable to read temperature: %s", strerror(errno));
             (void) close(fd);
             return -1;
         }
-        opts->temp.cpu = (uint16_t)atoi(buf);
-        (void) close(fd);
-    }
-    
-    if(opts->temp.gpu_temp_file[0] != '\0')
-    {
-       fd = open(opts->temp.gpu_temp_file, O_RDONLY);
-        if(fd < 0)
-        {
-            M_ERROR(MODULE_NAME, "Unable to open GPU temp file: %s", strerror(errno));
-            return -1;
-        }
-        (void)memset(buf, '\0', sizeof(buf));
-        ret = read(fd, buf, MAX_BUF);
-        if(ret < 0)
-        {
-            M_ERROR(MODULE_NAME, "Unable to read GPU temperature: %s", strerror(errno));
-            (void) close(fd);
-            return -1;
-        }
-        opts->temp.gpu = (uint16_t)atoi(buf);
+        *output = (uint16_t)atoi(buf);
         (void) close(fd);
     }
     return 0;
+}
+
+static int read_cpu_temp(app_data_t* opts)
+{
+    if(read_temp_file(opts->temp.cpu_temp_file, &opts->temp.cpu) == -1)
+    {
+        return -1;
+    }
+    return read_temp_file(opts->temp.gpu_temp_file, &opts->temp.gpu);
 }
 
 static int read_net_statistic(app_data_t* opts)

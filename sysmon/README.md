@@ -1,7 +1,7 @@
 Jetson Nano system monitor.
 
 Simple service that monitors system resource and shutdowns the system
-when the battery is below some value
+when the battery is low
 
 This service require the ADS1115 is connected to the
 Nano and is handled by the ads1015 linux driver
