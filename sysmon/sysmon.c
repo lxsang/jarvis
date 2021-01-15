@@ -448,7 +448,7 @@ static int log_to_file(app_data_t* opts)
     {
         return 0;
     }
-    fd = open(opts->data_file_out, O_CREAT|O_WRONLY|O_APPEND, 0644);
+    fd = open(opts->data_file_out, O_CREAT|O_WRONLY|O_APPEND | O_NONBLOCK, 0644);
     if(fd < 0)
     {
         M_ERROR(MODULE_NAME, "Unable to open output file: %s", strerror(errno));
@@ -525,6 +525,7 @@ static int log_to_file(app_data_t* opts)
     }
     else
     {
+        // M_LOG(MODULE_NAME, "written %d bytes to file: %s", strlen(out_buf), opts->data_file_out);
         ret = 0;
     }
     (void) close(fd);
