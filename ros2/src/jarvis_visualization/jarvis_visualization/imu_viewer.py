@@ -86,8 +86,8 @@ class IMUViewer(Node):
         [yaw, pitch , roll] = self.quat_to_ypr([w, nx, ny, nz])
         self.drawText((-2.6, -1.8, 2), "Yaw: %f, Pitch: %f, Roll: %f" %(yaw, pitch, roll), 16)
         
-        glRotatef(2 * math.acos(w) * 180.00/math.pi, -1 * nx, nz, ny)
-
+        glRotatef(2 * math.acos(w) * 180.00/math.pi,  nx, nz, -1*ny)
+        glRotated( -90, 1.0, 0.0, 0.0 )
         #glRotatef(yaw, 1.0, 0.0, 0.0)
         #glRotatef(pitch, 0.0, 1.0, 0.0)
         #glRotatef(roll, 0.0, 0.0, 1.0)
@@ -146,7 +146,7 @@ class IMUViewer(Node):
         glVertex3f(1.0, 0.2, 1.0)
         glVertex3f(1.0, -0.2, 1.0)
         glVertex3f(1.0, -0.2, -1.0)
-        glEnd()
+        glEnd() 
 
         # save previous matrix
         #glPushMatrix()
