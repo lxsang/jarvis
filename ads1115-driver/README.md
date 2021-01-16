@@ -22,7 +22,7 @@ cd /path/to/ads1115-driver
 KERNEL_SRC=~/jetson/Linux_for_Tegra/source/public/kernel/kernel-4.9 make
 ```
 
-#install dtbo + module to the system
+# install dtbo + module to the system
 
 ```sh
 sudo cp ads1115-overlay.dtbo /boot/
