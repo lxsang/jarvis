@@ -30,7 +30,6 @@ setup(
             'camera = jarvis_core.camera:main',
             't2mvel = jarvis_core.t2mvel:main',
             'wv2pwm = jarvis_core.wv2pwm:main',
-            'camviewer = jarvis_core.camera_viewer:main',
             'odometry = jarvis_core.odometry:main'
         ],
     },
