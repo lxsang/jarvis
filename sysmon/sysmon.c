@@ -136,6 +136,7 @@ typedef struct {
     int n_cpus;
     struct itimerspec sample_period;
     int pwoff_cd;
+    uint8_t power_off_percent;
 } app_data_t;
 
 static volatile int running = 1;
@@ -574,6 +575,10 @@ static int ini_handle(void *user_data, const char *section, const char *name, co
     {
         opts->pwoff_cd = atoi(value);
     }
+    else if(EQU(name, "power_off_percent"))
+    {
+        opts->power_off_percent = (uint8_t)atoi(value);
+    }
     else if(EQU(name, "data_file_out"))
     {
         (void)strncpy(opts->data_file_out, value, MAX_BUF-1);
@@ -635,6 +640,8 @@ static int load_config(app_data_t* opts)
     opts->bat_stat.ratio = 1.0;
     opts->bat_stat.read_voltage = 0.0;
     opts->bat_stat.percent = 0.0;
+    opts->power_off_percent = 1;
+    
     
     (void)memset(&opts->mem, '\0', sizeof(opts->mem));
     (void)memset(&opts->temp, '\0', sizeof(opts->temp));
@@ -709,6 +716,7 @@ int main(int argc, char *const *argv)
     M_LOG(MODULE_NAME, "Power off count down: %d", opts.pwoff_cd);
     M_LOG(MODULE_NAME,"CPU temp. input: %s",opts.temp.cpu_temp_file);
     M_LOG(MODULE_NAME,"GPU temp. input: %s",opts.temp.gpu_temp_file);
+    M_LOG(MODULE_NAME, "Poweroff percent: %d", opts.power_off_percent);
     
     // init timerfd
     tfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
@@ -748,7 +756,7 @@ int main(int argc, char *const *argv)
         }
         else
         {
-            if(opts.bat_stat.percent <= 1.0)
+            if(opts.bat_stat.percent <= (float)opts.power_off_percent)
             {
                 count_down--;
                 M_LOG(MODULE_NAME, "Out of battery. Will shutdown after %d count down", count_down);
