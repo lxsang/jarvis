@@ -163,7 +163,7 @@ class JettyNode(Node):
         # in the LSM9DS0 sensor. This rotation can be modified to allow any convenient orientation convention.
         # This is ok by aircraft orientation standards!
         # Pass gyro rate as rad/s
-        self.filter.update(ax,  ay,  az,  gx,  gy,  gz,  my,  mx,  mz)
+        self.filter.update(ax,  ay,  az,  gx,  gy,  gz,  my,  mx, mz)
 
         self.imu = Imu()
         self.imu.orientation.w = self.filter.quaternion[0]
