@@ -19,7 +19,7 @@
 
 #define DEFAULT_CONF_FILE (PREFIX "/etc/sysmond.conf")
 #define MODULE_NAME "sysmon"
-#define DEFAULT_INPUT "/sys/class/hwmon/hwmon2/device/in3_input"
+// #define DEFAULT_INPUT "/sys/class/hwmon/hwmon2/device/in3_input"
 #define NET_INF_STAT_PT "/sys/class/net/%s/statistics/%s"
 
 #define LOG_INIT(m) do { \
@@ -221,6 +221,10 @@ static int read_line(int fd, char *buf, int size)
 static int read_voltage(app_data_t* opts)
 {
     int fd, ret;
+    if(opts->bat_stat.bat_in[0] == '\0')
+    {
+        return 0;
+    }
     fd = open(opts->bat_stat.bat_in, O_RDONLY);
     if(fd < 0)
     {
@@ -744,36 +748,39 @@ int main(int argc, char *const *argv)
     count_down = opts.pwoff_cd;
     while(running)
     {
-        // open the file
-        if(read_voltage(&opts) == -1)
+        if(opts.bat_stat.bat_in[0] != '\0')
         {
-            M_ERROR(MODULE_NAME, "Unable to read system voltage");
-        }
-        volt = opts.bat_stat.read_voltage*opts.bat_stat.ratio;
-        if(volt < opts.bat_stat.cutoff_voltage)
-        {
-            M_LOG(MODULE_NAME, "Invalid voltage read: %.3f", volt);
-        }
-        else
-        {
-            if(opts.bat_stat.percent <= (float)opts.power_off_percent)
+            // open the file
+            if(read_voltage(&opts) == -1)
             {
-                count_down--;
-                M_LOG(MODULE_NAME, "Out of battery. Will shutdown after %d count down", count_down);
+                M_ERROR(MODULE_NAME, "Unable to read system voltage");
+            }
+            volt = opts.bat_stat.read_voltage*opts.bat_stat.ratio;
+            if(volt < opts.bat_stat.cutoff_voltage)
+            {
+                M_LOG(MODULE_NAME, "Invalid voltage read: %.3f", volt);
             }
             else
             {
-                // reset the count_down
-                count_down = opts.pwoff_cd;
-            }
-            // check if we should shutdown
-            if(count_down <= 0)
-            {
-                M_LOG(MODULE_NAME, "Shutting down system");
-                ret = system("poweroff");
-                (void) ret;
-                // this should never happend
-                return 0;
+                if(opts.bat_stat.percent <= (float)opts.power_off_percent)
+                {
+                    count_down--;
+                    M_LOG(MODULE_NAME, "Out of battery. Will shutdown after %d count down", count_down);
+                }
+                else
+                {
+                    // reset the count_down
+                    count_down = opts.pwoff_cd;
+                }
+                // check if we should shutdown
+                if(count_down <= 0)
+                {
+                    M_LOG(MODULE_NAME, "Shutting down system");
+                    ret = system("poweroff");
+                    (void) ret;
+                    // this should never happend
+                    return 0;
+                }
             }
         }
         // read cpu info
